@@ -1,3 +1,3 @@
-F:/CLionProjects/CS210_Program1/cmake-build-debug/CMakeFiles/C210_Program1.dir
-F:/CLionProjects/CS210_Program1/cmake-build-debug/CMakeFiles/edit_cache.dir
-F:/CLionProjects/CS210_Program1/cmake-build-debug/CMakeFiles/rebuild_cache.dir
+/cygdrive/f/CLionProjects/CS210_Program1/cmake-build-debug/CMakeFiles/rebuild_cache.dir
+/cygdrive/f/CLionProjects/CS210_Program1/cmake-build-debug/CMakeFiles/edit_cache.dir
+/cygdrive/f/CLionProjects/CS210_Program1/cmake-build-debug/CMakeFiles/C210_Program1.dir

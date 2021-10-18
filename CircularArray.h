@@ -1,263 +1,276 @@
 // STUDENT ORGANIC WAGYU CODE
-// Author: Maron Vincent Ejanda
+// Author: Tu Hoang
 // San Diego State University
 // CS210/CS496: Data Structures
 //
 // File: CircularArray.h
 // Defines the CircularArray collection class.
 
-#define VERSION_CIRARRAY 0.1
+//define VERSION_CIRARRAY 0.1
 
 // STUDENT CODE
-#ifndef PROG1_CIRCULARARRAY_H
-#define PROG1_CIRCULARARRAY_H
+#ifndef C210_PROGRAM1_CIRCULARARRAY_H
+#define C210_PROGRAM1_CIRCULARARRAY_H
 
-#define DEFAULT_CAPACITY 10
+#define TEST_START_CAPACITY 10
+#define TEST_START_ARRAY_SIZE 10
+
 
 #include "Queue.h"
 #include "List.h"
+#include <cstring>
 
-namespace sdsu 
-{
+namespace sdsu {
     template<typename T>
-    class CircularArray : public sdsu::Queue<T>, public sdsu::List<T> 
-    {
+    class CircularArray : public sdsu::Queue<T>, public sdsu::List<T> {
 
     private:
         // Size represents how many T items the structure holds
-        int curSize;
+        int curSize{};
 
         // Capacity represents how many T items the structure CAN hold
-        int curCapacity;
+        int curCapacity{};
 
         // todo: head and tail counters for the circular nature
-        int head {};
-        int tail {};
+        int frontIndex{}, backIndex{};
 
         // the array on the heap
         T *storage;
 
-        //Boolean to check if the size is full
 
-        bool changeCap (bool status)
-        {
-            T *temp = storage;
-            int newCapacity;
+        //Check if the array is full
+        bool isFull() {
+            if (curSize >= 0.8 * curCapacity)
+                return expandCapacity();
+            else
+                return false;
+        }
 
-            if(status)
-                newCapacity = curCapacity << 1;
-            else 
-                newCapacity = curCapacity >> 1;
+        //Check if the array is shrinkable
+        void isShrinkable() {
+            if (curSize <= 0.3 * curCapacity)
+                shrinkCapacity();
+        }
 
-            storage = new T[newCapacity];
-            for(int x = 0; x < curSize; x++)
-                storage[x] = temp[(x + head) % curCapacity];
-
-            tail = curSize -1;
-            head = 0;
-            curCapacity = newCapacity;
-            delete[] temp;
+        //Doubling the size of the array
+        bool expandCapacity() {
+            T *arr = storage;
+            storage = new T[curCapacity * 2];
+            for (int i = 0; i < curSize; i++) {
+                storage[i] = arr[(i + frontIndex) % curCapacity];
+            }
+            frontIndex = 0;
+            backIndex = curSize - 1;
+            curCapacity <<= 1;
+            delete[] arr;
             return false;
 
         }
 
-        //------------
-        bool full()
-        {
-            if(curSize == curCapacity)
-                return changeCap(1);
-            else
-                return false;
+        //Reducing the capacity by half
+        void shrinkCapacity() {
+            T *arr = storage;
+            storage = new T[curCapacity / 2];
+            for (int i = 0; i < curSize; i++) {
+                storage[i] = arr[(i + frontIndex) % curCapacity];
+            }
+            frontIndex = 0;
+            backIndex = curSize - 1;
+            curCapacity >>= 1;
+            delete[] arr;
         }
-        //------------
-        void half()
-        {
-            if(curSize == (curCapacity / 2))
-                changeCap(0);
-        
-        }
+
     public:
 
         // This is the default class constructor. It sets the current size to 0
-        CircularArray() : curSize(0)
-        {
-        // todo: initialize a default capacity storage array on the heap
-        curCapacity = DEFAULT_CAPACITY;
-        storage = new T[DEFAULT_CAPACITY];
-        head = 0;
-        tail =0;
-
+        CircularArray() : curSize(0) {
+            frontIndex = 0;
+            backIndex = 0;
+            // todo: initialize a default capacity storage array on the heap
+            curCapacity = TEST_START_CAPACITY;
+            storage = new T[TEST_START_ARRAY_SIZE];
         }
 
-        // DO THIS ---------------------------------------------------------------------
-        // The copy constructor!
-        CircularArray(const CircularArray<T> &other) : CircularArray() 
-        {
-            std::cout << "Copying . . .";
-
-            curCapacity = other.curCapacity;
-            curSize = other.curSize;
-            storage = new T[other.curCapacity];
-
-            head = other.head;
-            tail = other.tail;
-            //For loop to traverse the circulararray and copy
-            for(int x = head; x < head + curSize; x++)
-                storage[ x % curCapacity] = other.storage[x % curCapacity];
-        }
-
-
-        ~CircularArray() override 
-        {
+        //Destructor
+        ~CircularArray() override {
             delete[] storage;
         }
 
-        // DO THIS ---------------------------------------------------------------------
-        void clear() override 
-        {
+        // The copy constructor!
+        CircularArray(const CircularArray<T> &other){
+            std::cout << "Copying . . .";
+            curCapacity = other.curCapacity;
+            curSize = other.curSize;
+            storage = new T[other.curCapacity];
+            memcpy(storage, other.storage, curCapacity*sizeof(T));
+        }
+
+        void clear() override {
             // size == 0, and the capacity and dynamic array should
             // shrink back to its default size. There is a potential
             // for a memory leak here.
-
-            //deleteing the current storage to reset and to override
-            delete [] storage;
-            curCapacity = DEFAULT_CAPACITY;
-            storage = new T[curCapacity];
-
-            //Variables are now reset
-            curSize =0;
-            head = 0;
-            tail = 0;
-
+            delete[] storage;
+            curCapacity = TEST_START_CAPACITY;
+            storage = new T[TEST_START_ARRAY_SIZE];
+            curSize = 0;
+            frontIndex = 0;
+            backIndex = 0;
         }
 
-
-        // DO THISS --------------------------------------------------------------------
-        T dequeue() override 
-        {
-          
+        T dequeue() override {
+            //Calling removeFirst
             return removeFirst();
         }
 
-        // DO THIS ---------------------------------------------------------------------
-        bool enqueue(T t) override 
-        {
-            
-                
+        bool enqueue(T t) override {
+            //Calling addLast
             return addLast(t);
         }
 
-        // DO THIS ---------------------------------------------------------------------
-        bool isEmpty() const override 
-        {
+        bool isEmpty() const override {
             return size() == 0;
         }
 
-        // DO THIS ---------------------------------------------------------------------
-        T& peek() override 
-        {
-            // todo: this is here to make it compile, but it is wrong.
+        T &peek() override {
+            //Getting the element at the start of the array
             return get(0);
         }
 
-        // DO THIS ---------------------------------------------------------------------
-        bool addFirst(T t) override 
-        {
-            if (full() == false)
-            {
-                if (tail != 0 || head != 0 || curSize !=0)
-                    head = ((head  - 1 + curCapacity) % curCapacity);
-                storage[head] = t;
-                curSize++;
-                return true;
-            }
-            else
+        bool addFirst(T t) override {
+            //Check if the array is full
+            if (isFull() == true)
                 return false;
-
-
-        }
-
-        // DO THIS ---------------------------------------------------------------------
-        bool addLast(T t) override 
-        {
-            if(full () == false) {
-                if (head != 0 || tail != 0 || curSize != 0)
-                    tail = ((tail + 1) % curCapacity);
-                storage[tail] = t;
+            else {
+                //When it is not the first element, increase the front index (CCW)
+                if (frontIndex != 0 || backIndex != 0 || curSize != 0)
+                    frontIndex = (frontIndex - 1 + curCapacity) % curCapacity;
+                storage[frontIndex] = t;
                 curSize++;
                 return true;
             }
-             return false;
+
         }
 
-        // DO THIS ---------------------------------------------------------------------
-        T& get(int idx) override 
-        {
-            // todo: we need idx range checking. In C++, this is dangerous.
-            if(idx < 0 || idx > curSize - 1)
-                std::out_of_range("CircularArray<T>::get(idx) : index out of range.");
-            return storage[(idx + head) % curCapacity];
+        bool addLast(T t) override {
+            //Check if the array is full
+            if (isFull() == true)
+                return false;
+            else {
+                //When it is not the first element, increase the back index(CW)
+                if (frontIndex != 0 || backIndex != 0 || curSize != 0)
+                    backIndex = ((backIndex + 1) % curCapacity);
+                storage[backIndex] = t;
+                curSize++;
+                return true;
+            }
+
         }
 
-        // DO THIS ---------------------------------------------------------------------
-        bool insert(int idx, T t) override 
-        {
-            // if you figure out if you are closer to the head or tail, you can
-            // minimize the amount of array manipulation you need to perform.
+        bool insert(int idx, T t) override {
 
-            
+            //Checking if the index is out of range
+            if (idx < 0 || idx > curSize - 1 || isFull() == true)
+                throw std::out_of_range("CircularArray<T>::insert(idx,value) : index out of range.");
 
+            //Checking if this is the first element. If so, call addLast
+            if (idx == 0 && frontIndex == 0 && backIndex == 0 && curSize == 0) {
+                return addLast(t);
+            }
+
+            //Closer to the front
+            if (idx < curSize / 2) {
+                //Shifting the other elements towards the front
+                for (int i = frontIndex; i < idx + frontIndex + 1; i++) {
+                    storage[(i - 1 + curCapacity) % curCapacity] = storage[i % curCapacity];
+                }
+                frontIndex = (frontIndex - 1 + curCapacity) % curCapacity;
+
+
+            }
+            //Closer to the back or in the middle
+            else {
+                //Shifting the other elements towards the back
+                for (int i = backIndex; i > backIndex - curSize + idx; i--) {
+                    storage[(i + 1 + curCapacity) % curCapacity] = storage[(i + curCapacity) % curCapacity];
+                }
+                backIndex = (backIndex + 1) % curCapacity;
+            }
+            storage[(idx + frontIndex) % curCapacity] = t;
+            curSize++;
             return true;
         }
 
-        // DO THIS ---------------------------------------------------------------------
-        T remove(int i) override
-        {
-            // Figure out if the target index is closer to the front or back
-            // and then shuffle from that index (tail or head).
-            if(i < 0 || i > curSize - 1)
-                throw std::out_of_range("CircularArray<T>::remove(i) : index out of range.");
-            return false;
+        T &get(int idx) override {
+            //Checking if the index is out of range
+            if (idx >= 0 && idx <= curSize - 1)
+                return storage[(idx + frontIndex) % curCapacity];
+            else
+                throw std::out_of_range("CircularArray<T>::get(idx) : index out of range.");
 
         }
+        T remove(int idx) override {
+            int removedItem;
 
-        // DO THIS ---------------------------------------------------------------------
-        T removeFirst() override 
-        {
-            // If you wrote remove correctly, this can be a single line.
-            // you *might* want to clean up any exception handling though . . . .
-            if(isEmpty() == false) {
-                int item = storage[head];
-                head = ((head + 1) % curCapacity);
-                curSize--;
-                return item;
+            //Checking if the index is out of range
+            if (idx >= 0 && idx <= curSize - 1)
+                removedItem = storage[(idx + frontIndex) % curCapacity];
+            else
+                throw std::out_of_range("CircularArray<T>::remove(idx) : index out of range. ");
+
+            //Closer to the front
+            if (idx < curSize / 2) {
+
+                if (idx != 0) {
+                    //Shifting the other elements if the idx is not at the front position
+                    for (int i = frontIndex; i < idx + frontIndex + 1; i++) {
+                        storage[(i + 1) % curCapacity] = storage[i % curCapacity];
+                    }
+                }
+                frontIndex = (frontIndex + 1) % curCapacity;
+
+            //Closer to the back or in the middle
+            } else {
+                if (idx != curSize - 1) {
+                    //Shifting the other elements if the idx is not the back position
+                    for (int i = backIndex; i > backIndex - curSize + idx; i--) {
+                        storage[(i - 1 + curCapacity) % curCapacity] = storage[i % curCapacity];
+                    }
+                }
+                backIndex = (backIndex - 1 + curCapacity) % curCapacity;
             }
-            return false;
+
+            curSize--;
+            isShrinkable();
+            return removedItem;
         }
 
-        // DO THIS ---------------------------------------------------------------------
-        T removeLast() override 
-        {
-            // If you wrote remove correctly, this can be a single line.
-            // you *might* want to clean up any exception handling though . . . .
+        T removeFirst() override {
+            //If the array is not empty, call remove(0)
+            return isEmpty() ? false: remove(0);
 
-            return false;
         }
 
-        // DO THIS ---------------------------------------------------------------------
-        void set(int idx, T value) override 
-        {
-            if(idx < 0 || idx > curSize - 1)
-                 std::out_of_range("CircularArray<T>::set(idx,value) : index out of range.");
-            storage[(idx + head) % curCapacity] = value;
+        T removeLast() override {
+            //If the array is not empty, call remove(curSize - 1)
+            return isEmpty() ?  false : remove(curSize - 1);
         }
 
-        // DO THIS ---------------------------------------------------------------------
-        int size() const override 
-        {
+
+        void set(int idx, T value) override {
+
+            //Checking if the index is out of range
+            if (idx >= 0 && idx <= curSize - 1)
+                storage[(idx + frontIndex) % curCapacity] = value;
+            else
+                throw std::out_of_range("CircularArray<T>::set(idx,value) : index out of range. ");
+        }
+
+        int size() const override {
             return curSize;
         }
+
+
     };
 }
 
-#endif //PROG1_CIRCULARARRAY_H
+#endif //C210_PROGRAM1_CIRCULARARRAY_H

@@ -6,25 +6,27 @@
 
 #IncludeRegexTransform: 
 
-F:/CLionProjects/CS210_Program1/CircularArray.h
+/cygdrive/f/CLionProjects/CS210_Program1/CircularArray.h
 Queue.h
-F:/CLionProjects/CS210_Program1/Queue.h
+/cygdrive/f/CLionProjects/CS210_Program1/Queue.h
 List.h
-F:/CLionProjects/CS210_Program1/List.h
+/cygdrive/f/CLionProjects/CS210_Program1/List.h
+cstring
+-
 
-F:/CLionProjects/CS210_Program1/List.h
+/cygdrive/f/CLionProjects/CS210_Program1/List.h
 
-F:/CLionProjects/CS210_Program1/Queue.h
+/cygdrive/f/CLionProjects/CS210_Program1/Queue.h
 
-F:/CLionProjects/CS210_Program1/main.cpp
+/cygdrive/f/CLionProjects/CS210_Program1/main.cpp
 iostream
 -
 iomanip
 -
 Queue.h
-F:/CLionProjects/CS210_Program1/Queue.h
+/cygdrive/f/CLionProjects/CS210_Program1/Queue.h
 List.h
-F:/CLionProjects/CS210_Program1/List.h
+/cygdrive/f/CLionProjects/CS210_Program1/List.h
 CircularArray.h
-F:/CLionProjects/CS210_Program1/CircularArray.h
+/cygdrive/f/CLionProjects/CS210_Program1/CircularArray.h
 
